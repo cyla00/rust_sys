@@ -21,7 +21,7 @@ async fn main(){
                 match res.text().await {
                     Ok(text) => {
                         ip = text;
-                        let mut url: String = "https://www.iplocation.net/ip-lookup?query=".to_string();
+                        let mut url: String = "https://fr.infobyip.com?query=".to_string();
                         let complete_url = format!("{}{}", url, ip);
 
                         let client = reqwest::Client::new();
@@ -32,11 +32,14 @@ async fn main(){
                                     match res.text().await {
                                         Ok(text) => {
                                             let document = Html::parse_document(&text);
-                                            Document::from_read(&document)
-                                                .unwrap()
-                                                .find(Name("a"))
-                                                .filter_map(|n| n.attr("href"))
-                                                .for_each(|x| println!("{}", x));
+
+                                            println!("{:?}", &document);
+
+                                            // Document::from_read(&document)
+                                            //     .unwrap()
+                                            //     .find(Name("a"))
+                                            //     .filter_map(|n| n.attr("href"))
+                                            //     .for_each(|x| println!("{}", x));
 
                                             //push geoloc data into vars
 

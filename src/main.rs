@@ -33,13 +33,13 @@ async fn main(){
                                         Ok(text) => {
                                             let document = Html::parse_document(&text);
 
-                                            println!("{:?}", &document);
+                                            // println!("{:?}", &document);
 
-                                            // Document::from_read(&document)
-                                            //     .unwrap()
-                                            //     .find(Name("a"))
-                                            //     .filter_map(|n| n.attr("href"))
-                                            //     .for_each(|x| println!("{}", x));
+                                            Document::from_read(&document)
+                                                .unwrap()
+                                                .find(Name("a"))
+                                                .filter_map(|n| n.attr("href"))
+                                                .for_each(|x| println!("{}", &x));
 
                                             //push geoloc data into vars
 

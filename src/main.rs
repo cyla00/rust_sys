@@ -1,19 +1,13 @@
 use sysinfo::{NetworkExt, NetworksExt, ProcessExt, System, SystemExt};
 extern crate reqwest;
-extern crate select;
-extern crate scraper;
-
-use scraper::{Html, Selector};
-use select::document::Document;
-use select::predicate::{Attr, Class, Name, Predicate};
+extern crate serde_json;
+use serde_json::Value;
+use serde::{Serialize, Deserialize};
 
 #[tokio::main]
 async fn main(){
 
     let mut ip: String = String::new();
-    // let mut country: String = String::new();
-    // let mut region: String = String::new();
-    // let mut city: String = String::new();
 
     match reqwest::get("https://ifconfig.me").await {
         Ok(res) => {
@@ -21,27 +15,48 @@ async fn main(){
                 match res.text().await {
                     Ok(text) => {
                         ip = text;
-                        let mut url: String = "https://fr.infobyip.com?query=".to_string();
-                        let complete_url = format!("{}{}", url, ip);
+                        let mut url: String = "https://nordvpn.com/wp-admin/admin-ajax.php?action=get_user_info_data".to_string();
 
                         let client = reqwest::Client::new();
 
-                        match client.post(complete_url).send().await {
+                        match client.get(url).send().await {
                             Ok(res) => {
                                 if res.status() == reqwest::StatusCode::OK {
                                     match res.text().await {
                                         Ok(text) => {
-                                            let document = Html::parse_document(&text);
+                                            
+                                            #[derive(Serialize, Deserialize, Debug)]
+                                            pub struct Geolocation {
+                                                coordinates: Coordinates,
+                                                ip: String,
+                                                isp: String,
+                                                host: Host,
+                                                status: bool,
+                                                country: String,
+                                                region: String,
+                                                city: String,
+                                                location: String,
+                                                area_code: String,
+                                                country_code: String,
+                                            }
+                                            
+                                            #[derive(Serialize, Deserialize, Debug)]
+                                            pub struct Coordinates {
+                                                latitude: f64,
+                                                longitude: f64,
+                                            }
+                                            
+                                            #[derive(Serialize, Deserialize, Debug)]
+                                            pub struct Host {
+                                                domain: String,
+                                                ip_address: String,
+                                            }
+                                            
+                                            let data: Geolocation = serde_json::from_str(&text).unwrap();
 
-                                            // println!("{:?}", &document);
-
-                                            Document::from_read(&document)
-                                                .unwrap()
-                                                .find(Name("a"))
-                                                .filter_map(|n| n.attr("href"))
-                                                .for_each(|x| println!("{}", &x));
-
-                                            //push geoloc data into vars
+                                            if &ip == &data.ip {
+                                                println!("the ip {} is coherent", &data.ip); //possible verifications HERE
+                                            }
 
                                         }
                                         Err(_) => println!("wasnt able to grab geolocal")

@@ -10,5 +10,5 @@ edition = "2021"
 sysinfo = {version = "0.23.5", default-features = false}
 tokio = { version = "1.17.0", features = ["full"] }
 reqwest = "0.11.9"
-select = "0.5.0"
-scraper = "0.12.0"
+serde = { version = "1.0.104", features = ["derive"] }
+serde_json = "1.0.48"

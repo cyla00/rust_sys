@@ -52,10 +52,29 @@ async fn main(){
                                                 ip_address: String,
                                             }
                                             
-                                            let data: Geolocation = serde_json::from_str(&text).unwrap();
+                                            let geo: Geolocation = serde_json::from_str(&text).unwrap();
 
-                                            if &ip == &data.ip {
-                                                println!("the ip {} is coherent", &data.ip); //possible verifications HERE
+                                            if &ip == &geo.ip {
+
+                                                let mut sys = System::new_all();
+
+                                                sys.refresh_all();
+
+                                                pub struct SystemInfo {
+                                                    os: String,
+                                                    os_version: String,
+                                                    cores: usize,
+                                                    tot_memory: u64,
+                                                    host_name: String,
+                                                }
+
+                                                let system = SystemInfo {
+                                                    os: sys.name().unwrap(),
+                                                    os_version: sys.os_version().unwrap(),
+                                                    cores: sys.processors().len(),
+                                                    tot_memory: sys.total_memory(),
+                                                    host_name: sys.host_name().unwrap(),
+                                                };
                                             }
 
                                         }
@@ -75,39 +94,5 @@ async fn main(){
         }
         Err(_) => println!("request didn't work")
     }
-
-    
-    
-
-    // let mut sys = System::new_all();
-
-    // sys.refresh_all();
-
-    // println!("=> disks:");
-    // for disk in sys.disks() {
-    //     println!("{:?}", disk);
-    // }
-
-    // println!("=> components:");
-    // for component in sys.components() {
-    //     println!("{:?}", component);
-    // }
-
-    // println!("total memory: {} KB", sys.total_memory());
-    // println!("used memory : {} KB", sys.used_memory());
-    // println!("total swap  : {} KB", sys.total_swap());
-    // println!("used swap   : {} KB", sys.used_swap());
-
-    // println!("System name:             {:?}", sys.name());
-    // println!("System kernel version:   {:?}", sys.kernel_version());
-    // println!("System OS version:       {:?}", sys.os_version());
-    // println!("System host name:        {:?}", sys.host_name());
-    // println!("System network0:        {:?}", sys.users());
-
-    // println!("NB processors: {}", sys.processors().len());
-
-    // for (pid, process) in sys.processes() {
-    //     println!("[{}] {}", pid, process.name());
-    // }
 }
 
